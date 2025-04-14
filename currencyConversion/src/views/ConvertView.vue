@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useCurrencyStore } from '@/stores/currency'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
@@ -84,26 +84,30 @@ import Card from 'primevue/card'
 import { currencies } from '@/metadata'
 
 const currencyStore = useCurrencyStore()
-const amount = ref(currencyStore.amount)
-const convertedAmount = ref(currencyStore.convertedAmount)
-const fromCurrency = ref(currencyStore.fromCurrency)
-const toCurrency = ref(currencyStore.toCurrency)
+const amount = ref(1)
+const fromCurrency = ref('USD')
+const toCurrency = ref('RUB')
 const toast = useToast()
 
 onMounted(() => {
   currencyStore.fetchRates()
 })
 
-watch([fromCurrency, toCurrency], () => {
-  console.log(222);
+const convertedAmount = computed(() => {
+  if (fromCurrency.value === toCurrency.value || !currencyStore.rates) {
+    return amount.value
+  }
+
+  const rateKey = `${fromCurrency.value.toLowerCase()}-${toCurrency.value.toLowerCase()}`
+  const rate = currencyStore.rates[rateKey]
   
-  currencyStore.convertedAmount
+  return amount.value * rate
 })
 
 function swapCurrencies() {
-  const from = currencyStore.fromCurrency
-  currencyStore.fromCurrency = currencyStore.toCurrency
-  currencyStore.toCurrency = from
+  const from = fromCurrency.value
+  fromCurrency.value = toCurrency.value
+  toCurrency.value = from
 }
 function copyResult() {
   const text = `${currencyStore.amount} ${currencyStore.fromCurrency} = ${currencyStore.convertedAmount} ${currencyStore.toCurrency}`

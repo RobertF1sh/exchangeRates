@@ -59,7 +59,7 @@ const ratesList = computed(() => {
     .filter(([currency]) => currency !== baseCurrency.value)
     .map(([currency, rate]) => ({
       currency,
-      rate: (rate / baseRate).toFixed(3),
+      rate,
     }))
 })
 

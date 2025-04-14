@@ -15,14 +15,10 @@ export const useCurrencyStore = defineStore(
         EUR: 0,
         RUB: 1,
       },
-      amount: 1,
-      fromCurrency: 'RUB',
-      toCurrency: 'USD',
+      rates: {},
     })
 
     const convertedAmount = computed(() => {
-        console.log(11);
-        
       void fetchRates()
 
       if (!state.amount || state.amount === 0) return 0
@@ -54,9 +50,11 @@ export const useCurrencyStore = defineStore(
         state.error = null
 
         const { data } = await axios('https://status.neuralgeneration.com/api/currency')
+
         const currencyMappings = createCurrencyMappings(data)
 
         state.currencies = currencyMappings[state.baseCurrency]
+        state.rates = data
       } catch (err) {
         state.error = 'Не удалось загрузить курсы валют'
         throw new Error(err)
