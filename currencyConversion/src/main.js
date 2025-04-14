@@ -3,16 +3,16 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-import PrimeVue from 'primevue/config'
-import ToastService from 'primevue/toastservice'
-import Tooltip from 'primevue/tooltip'
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
+import PrimeVue from '../node_modules/primevue/config'
+import ToastService from '../node_modules/primevue/toastservice'
+import Tooltip from '../node_modules/primevue/tooltip'
+import InputText from '../node_modules/primevue/inputtext'
+import Button from '../node_modules/primevue/button'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-import 'primevue/resources/themes/saga-blue/theme.css'
-import 'primevue/resources/primevue.min.css'
-import 'primeicons/primeicons.css'
+import '../node_modules/primevue/resources/themes/saga-blue/theme.css'
+import '../node_modules/primevue/resources/primevue.min.css'
+import '../node_modules/primeicons/primeicons.css'
 
 const app = createApp(App)
 

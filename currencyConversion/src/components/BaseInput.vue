@@ -1,17 +1,17 @@
 <template>
   <div class="base-input">
     <label v-if="label" class="block text-sm font-medium mb-1">{{ label }}</label>
-    
+
     <div class="p-inputgroup">
       <InputText
         ref="inputRef"
         :modelValue="modelValue"
-        @update:modelValue="value => emit('update:modelValue', value)"
+        @update:modelValue="(value) => emit('update:modelValue', value)"
         :placeholder="placeholder"
         :disabled="disabled"
         class="w-full"
       />
-      
+
       <Button
         v-if="copyable"
         icon="pi pi-copy"
@@ -35,24 +35,24 @@ const toast = useToast()
 const props = defineProps({
   modelValue: {
     type: [String, Number],
-    default: ''
+    default: '',
   },
   label: {
     type: String,
-    default: ''
+    default: '',
   },
   copyable: {
     type: Boolean,
-    default: false
+    default: false,
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   placeholder: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -60,23 +60,23 @@ const emit = defineEmits(['update:modelValue'])
 const inputRef = ref(null)
 
 async function copyToClipboard() {
-  if (!props.modelValue) return;
-  
+  if (!props.modelValue) return
+
   try {
-    await navigator.clipboard.writeText(String(props.modelValue));
+    await navigator.clipboard.writeText(String(props.modelValue))
     toast.add({
       severity: 'success',
       summary: 'Скопировано',
       detail: 'Текст успешно скопирован в буфер обмена',
-      life: 3000
-    });
-  } catch (error) {
+      life: 3000,
+    })
+  } catch {
     toast.add({
       severity: 'error',
       summary: 'Ошибка',
       detail: 'Не удалось скопировать текст',
-      life: 3000
-    });
+      life: 3000,
+    })
   }
 }
 </script>

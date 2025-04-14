@@ -5,12 +5,12 @@
       <div class="converter-grid p-fluid">
         <div class="field">
           <label for="amount">Сумма</label>
-          <InputNumber 
+          <InputNumber
             id="amount"
-            v-model="currencyStore.amount" 
-            mode="decimal" 
+            v-model="amount"
+            mode="decimal"
             :minFractionDigits="2"
-            :maxFractionDigits="6"
+            :maxFractionDigits="4"
             showButtons
             :min="0"
             :max="1000000000"
@@ -19,17 +19,17 @@
 
         <div class="field">
           <label for="from-currency">Из</label>
-          <Dropdown 
+          <Dropdown
             id="from-currency"
-            v-model="currencyStore.fromCurrency" 
-            :options="currencies" 
+            v-model="fromCurrency"
+            :options="currencies"
             placeholder="Выберите валюту"
           />
         </div>
 
         <div class="swap-btn">
-          <Button 
-            icon="pi pi-sort-alt" 
+          <Button
+            icon="pi pi-sort-alt"
             class="p-button-rounded p-button-text"
             @click="swapCurrencies"
             v-tooltip="'Поменять валюты местами'"
@@ -38,10 +38,10 @@
 
         <div class="field">
           <label for="to-currency">В</label>
-          <Dropdown 
+          <Dropdown
             id="to-currency"
-            v-model="currencyStore.toCurrency" 
-            :options="currencies" 
+            v-model="toCurrency"
+            :options="currencies"
             placeholder="Выберите валюту"
           />
         </div>
@@ -49,16 +49,16 @@
 
       <div class="result-container">
         <div class="result">
-          <span class="amount">{{ currencyStore.amount }}</span>
-          <span class="currency">{{ currencyStore.fromCurrency }}</span>
+          <span class="amount">{{ amount }}</span>
+          <span class="currency">{{ fromCurrency }}</span>
           <span class="equals">=</span>
-          <span class="amount">{{ currencyStore.convertedAmount.toFixed(4) }}</span>
-          <span class="currency">{{ currencyStore.toCurrency }}</span>
+          <span class="amount">{{ convertedAmount.toFixed(4) }}</span>
+          <span class="currency">{{ toCurrency }}</span>
         </div>
 
-        <Button 
-          icon="pi pi-copy" 
-          label="Копировать" 
+        <Button
+          icon="pi pi-copy"
+          label="Копировать"
           class="p-button-outlined"
           @click="copyResult"
         />
@@ -74,20 +74,30 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useCurrencyStore } from '@/stores/currency'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
 import Card from 'primevue/card'
+import { currencies } from '@/metadata'
 
 const currencyStore = useCurrencyStore()
+const amount = ref(currencyStore.amount)
+const convertedAmount = ref(currencyStore.convertedAmount)
+const fromCurrency = ref(currencyStore.fromCurrency)
+const toCurrency = ref(currencyStore.toCurrency)
 const toast = useToast()
-const currencies = ['USD', 'EUR', 'RUB']
 
 onMounted(() => {
   currencyStore.fetchRates()
+})
+
+watch([fromCurrency, toCurrency], () => {
+  console.log(222);
+  
+  currencyStore.convertedAmount
 })
 
 function swapCurrencies() {
@@ -95,18 +105,16 @@ function swapCurrencies() {
   currencyStore.fromCurrency = currencyStore.toCurrency
   currencyStore.toCurrency = from
 }
-
-function copyResult () {
+function copyResult() {
   const text = `${currencyStore.amount} ${currencyStore.fromCurrency} = ${currencyStore.convertedAmount} ${currencyStore.toCurrency}`
-  navigator.clipboard.writeText(text)
-    .then(() => {
-      toast.add({
-        severity: 'success',
-        summary: 'Скопировано',
-        detail: 'Результат скопирован в буфер обмена',
-        life: 3000
-      })
+  navigator.clipboard.writeText(text).then(() => {
+    toast.add({
+      severity: 'success',
+      summary: 'Скопировано',
+      detail: 'Результат скопирован в буфер обмена',
+      life: 3000,
     })
+  })
 }
 </script>
 

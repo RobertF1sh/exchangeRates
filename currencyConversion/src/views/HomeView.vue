@@ -1,37 +1,37 @@
 <template>
   <div class="home">
     <h1 class="title">Курсы валют</h1>
-    
+
     <div class="card">
       <div class="currency-selector">
         <label for="currency" class="selector-label">Базовая валюта:</label>
-        <Dropdown 
+        <Dropdown
           id="currency"
           v-model="baseCurrency"
-          :options="currencyOptions" 
+          :options="currencyOptions"
           optionLabel="label"
           optionValue="value"
           class="currency-dropdown"
         />
       </div>
-      
+
       <div v-if="currencyStore.loading" class="loading">
         <i class="pi pi-spinner pi-spin spinner-icon"></i>
         <p>Загрузка курсов валют...</p>
       </div>
-      
+
       <div v-else-if="currencyStore.error" class="error">
         <i class="pi pi-exclamation-triangle error-icon"></i>
         <p>{{ currencyStore.error }}</p>
       </div>
-      
+
       <div v-else class="rates-container">
         <div v-for="item in ratesList" :key="item.currency" class="rate-card">
           <span class="rate-value">1 {{ baseCurrency }} = {{ item.rate }} {{ item.currency }}</span>
         </div>
       </div>
     </div>
-    
+
     <RouterLink to="/convert" class="converter-link">
       <Button label="Конвертер валюты" class="converter-button" />
     </RouterLink>
@@ -43,29 +43,24 @@ import { useCurrencyStore } from '@/stores/currency'
 import { onMounted, computed, ref, watch } from 'vue'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
+import { currencyOptions } from '@/metadata'
 
-const currencyStore = useCurrencyStore();
+const currencyStore = useCurrencyStore()
 const baseCurrency = ref(currencyStore.baseCurrency)
-const currencyOptions = [
-  { label: 'Евро (EUR)', value: 'EUR' },
-  { label: 'Доллар (USD)', value: 'USD' },
-  { label: 'Рубль (RUB)', value: 'RUB' }
-]
 
 const ratesList = computed(() => {
-  if (!currencyStore.exchangeRates) {
+  if (!currencyStore.currencies) {
     return []
-  }  
-  
-  const baseRate = currencyStore.exchangeRates[baseCurrency.value]
-  
-  return Object.entries(currencyStore.exchangeRates)
+  }
+
+  const baseRate = currencyStore.currencies[baseCurrency.value]
+
+  return Object.entries(currencyStore.currencies)
     .filter(([currency]) => currency !== baseCurrency.value)
     .map(([currency, rate]) => ({
       currency,
-      rate: (rate / baseRate).toFixed(3)
+      rate: (rate / baseRate).toFixed(3),
     }))
-  return []
 })
 
 onMounted(() => {
@@ -115,7 +110,8 @@ watch(baseCurrency, (newValue) => {
   width: 100%;
 }
 
-.loading, .error {
+.loading,
+.error {
   display: flex;
   flex-direction: column;
   align-items: center;
